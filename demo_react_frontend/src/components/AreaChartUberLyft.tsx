@@ -53,7 +53,7 @@ class AreaChartUberLyft extends PureComponent {
   render() {
     return (
   
-  <Paper elevation={3} sx={{padding: 2, height: '100%'}}>
+  <Paper elevation={1} sx={{padding: 2, height: '100%'}}>
     <Typography variant = "h6" sx = {{color: 'gray', fontSize: 15, fontFamily: 'Lato, Ariel, sans-serif'}}>Average Pay per Ride Based on Day of Week</Typography>
       <ResponsiveContainer width="100%" height={350}>
         <AreaChart

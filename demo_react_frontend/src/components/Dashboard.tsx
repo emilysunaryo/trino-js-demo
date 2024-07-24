@@ -1,11 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import { Grid, AppBar, Toolbar, Typography, CssBaseline, Container, SelectChangeEvent, Button} from '@mui/material'
+import { Grid, AppBar, Toolbar, Typography, CssBaseline, Container, SelectChangeEvent, Button, Box} from '@mui/material'
 import Heatmap  from './Heatmap'
 import BubbleChart from './BubbleChart'
 import RadarChart from './RadarChart'
 import AreaChartUberLyft from './AreaChartUberLyft'
+import CardComponent from './CardComponent';
 import SelectComponent from './SelectComponent';
 import './styles/DashboardStyle.css'
+import axios from 'axios';
+import { alignProperty } from '@mui/material/styles/cssUtils';
 
 
 
@@ -13,6 +16,27 @@ function Dashboard() {
     const [date, setDate] = useState<string>('');
     const [borough, setBorough] = useState<string>('');
     const [filters, setFilters] = useState<{date: string, borough:string}>({date: '', borough: ''});
+    const [testData, setTestData] = useState<number[][]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+
+
+ //renders once when the page gets loaded fully
+  useEffect(() => {
+    const handleQuery = async () => {
+        try {
+            const responseData = await axios.get('http://localhost:3001/api/query1');
+            console.log("testing data from server in react frontend:", responseData.data);
+            setTestData(responseData.data);
+            setLoading(false);
+        } catch(error) {
+            console.log("error fetching data:", error)
+        }
+    };
+    handleQuery();
+  },[]);
+
+  console.log("testing testdata:", testData);
 
 
     const handleDateChange = (event: SelectChangeEvent<string>) => {
@@ -49,49 +73,80 @@ function Dashboard() {
 
 return (
 <div>
-    <CssBaseline /> 
-    <AppBar position="static" style={{backgroundColor: '#bebdb8'}}>
+
     <Toolbar>
-        <Typography variant="h6" sx ={{flexGrow: 1, fontSize: 20, fontFamily:'Lato, Ariel, sans-serif', textAlign: 'left'}}>
-            Rideshare Analysis in NYC Metropolitan Area
+        <Typography variant="h6" 
+                    sx ={{flexGrow: 1, 
+                    fontSize: 25, 
+                    textAlign: 'left', color: '#616161',
+                    marginTop: 4, marginLeft: 3}}>
+            2022 Rideshare Analysis in NYC Metropolitan Area
         </Typography>
     </Toolbar>
-    </AppBar>
 
-<Container sx = {{mt: 2}}>
-    <Grid container spacing = {2}>
-        <Grid item xs={12} md ={2}>
+
+    <Box display = "flex" justifyContent= "flex-start" alignItems="center" sx={{mt:2, marginLeft: 5}}>
+        <Box>
             <SelectComponent
                 helperText = "Select Day of Week"
                 value = {date}
                 onChange = {handleDateChange}
                 options={dateFilterOptions} 
-            />
-        </Grid>
-        <Grid item xs={12} md ={2}>
+                />
+            </Box>
+        <Box sx={{paddingLeft: 5}}>
             <SelectComponent
                 helperText = "Select Boroughs"
                 value = {borough}
                 onChange = {handleBoroughChange}
                 options={boroughFilterOptions} 
+                />
+         </Box>
+     </Box>
+
+
+
+
+<Grid container spacing={5} sx={{ padding: 5 }}>
+        <Grid item xs={12} md={3}>
+            <CardComponent
+            cardTitle = "example title"
+            value = {1000}
+            description = "example description"
             />
         </Grid>
 
-        <Button></Button>
+        <Grid item xs={12} md={3} >
+            <CardComponent
+            cardTitle = "example title"
+            value = {1000}
+            description = "example description"
+            />
+        </Grid>
 
-    </Grid>
+        <Grid item xs={12} md={3}>
+            <CardComponent
+            cardTitle = "example title"
+            value = {1000}
+            description = "example description"
+            />
+        </Grid>
 
-</Container>
-
-<Grid container spacing={3} sx={{ padding: 2 }}>
-    <Grid item xs={12} md={4} sx={{ height: 450, marginBottom: 1, marginTop: 2 }}>
+        <Grid item xs={12} md={3} >
+            <CardComponent
+            cardTitle = "example title"
+            value = {1000}
+            description = "example description"
+            />
+        </Grid>
+    <Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 1, marginTop: 2 }}>
         <AreaChartUberLyft />
     </Grid>
-    <Grid item xs={12} md={4} sx={{ height: 450, marginBottom: 1, marginTop: 2  }}>
-        <AreaChartUberLyft />
+    <Grid item xs={12} md={5} sx={{ height: 450, marginBottom: 1, marginTop: 2  }}>
+        <BubbleChart />
     </Grid>
-    <Grid item xs={12} md={4} sx={{ height: 450, marginBottom: 1, marginTop: 2  }}>
-        <AreaChartUberLyft />
+    <Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 1, marginTop: 2  }}>
+        <RadarChart />
     </Grid>
     <Grid item xs={12} md={4} sx={{ height: 450, marginBottom: 1, marginTop: 2 }}>
         <AreaChartUberLyft />
