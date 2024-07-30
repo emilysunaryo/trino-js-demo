@@ -30,8 +30,8 @@ function CardComponent({cardTitle, value, description }: CardComponentProps) {
         </>
       );
     return (
-        <Box sx={{ minWidth: 280, backgroundColor: 'white', borderRadius: 5 }}>
-        <Card variant="outlined" sx={{height: 325, borderRadius: 5}}>{card}</Card>
+        <Box sx={{ minWidth: 250, backgroundColor: 'white', borderRadius: 5, marginTop: -2 }}>
+        <Card variant="outlined" sx={{height: 225, borderRadius: 5}}>{card}</Card>
       </Box>
     )
 }

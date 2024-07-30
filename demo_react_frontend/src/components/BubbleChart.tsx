@@ -71,8 +71,6 @@ const parseDomain = () => [
 ];
 
 export default class Example extends PureComponent {
-  static demoUrl = 'https://codesandbox.io/p/sandbox/multi-bubble-chart-tcqkqx';
-
   renderTooltip = (props: any) => {
     const { active, payload } = props;
 
@@ -106,250 +104,184 @@ export default class Example extends PureComponent {
 
     return (
       <div style={{ width: '100%', backgroundColor: '#fff', borderRadius: 10 }}>
-        <Paper elevation={1} sx={{padding: 2, height: '100%'}}>
-        <Typography variant = "h6" sx = {{color: 'gray', fontSize: 13, fontFamily: 'Lato, Ariel, sans-serif', marginBottom: 2}}>Average Pay for ride based on Hour/Day</Typography>
-        <ResponsiveContainer width="100%" height={60}>
-          <ScatterChart
-            margin={{
-              top: 10,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <XAxis
-              type="category"
-              dataKey="hour"
-              interval={0}
-              tick={{ fontSize: 0 }}
-              tickLine={{ transform: 'translate(0, -6)' }}
-            />
-            <YAxis
-              type="number"
-              dataKey="index"
-              name="sunday"
-              height={10}
-              width={80}
-              tick={false}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: 'Sunday', position: 'insideRight', fontSize: 12 }}
-            />
-            <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-            <Scatter data={data01} fill="#8884d8" />
-          </ScatterChart>
-        </ResponsiveContainer>
+        <Paper elevation={1} sx={{padding: 3, height: '100%'}}>
+        <Typography variant = "h6" sx = {{color: 'gray', fontSize: 15, fontFamily: 'Lato, Ariel, sans-serif', marginBottom: 2}}> Ride Requests in NY Boroughs By Hour</Typography>
+      
+          <ResponsiveContainer width="100%" height={66}>
+            <ScatterChart
+              width={800}
+              height={60}
+              margin={{
+                top: 10,
+                right: 0,
+                bottom: 0,
+                left: 0,
+              }}
+            >
+              <XAxis
+                type="category"
+                dataKey="hour"
+                name="hour"
+                interval={0}
+                tick={{ fontSize: 0 }}
+                tickLine={{ transform: 'translate(0, -6)' }}
+              />
+              <YAxis
+                type="number"
+                dataKey="index"
+                height={10}
+                width={80}
+                tick={false}
+                tickLine={false}
+                axisLine={false}
+                label={{ value: 'Manhattan', position: 'insideRight', fontSize: 13 }}
+              />
+              <ZAxis type="number" dataKey="value" domain={domain} range={range} />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
+              <Scatter data={data02} fill="#ffc658" />
+            </ScatterChart>
+          </ResponsiveContainer>
 
-        <ResponsiveContainer width="100%" height={60}>
-          <ScatterChart
-            width={800}
-            height={60}
-            margin={{
-              top: 10,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <XAxis
-              type="category"
-              dataKey="hour"
-              name="hour"
-              interval={0}
-              tick={{ fontSize: 0 }}
-              tickLine={{ transform: 'translate(0, -6)' }}
-            />
-            <YAxis
-              type="number"
-              dataKey="index"
-              height={10}
-              width={80}
-              tick={false}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: 'Monday', position: 'insideRight', fontSize: 13 }}
-            />
-            <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-            <Scatter data={data02} fill="#ffc658" />
-          </ScatterChart>
-        </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={60}>
+            <ScatterChart
+              width={800}
+              height={60}
+              margin={{
+                top: 10,
+                right: 0,
+                bottom: 0,
+                left: 0,
+              }}
+            >
+              <XAxis
+                type="category"
+                dataKey="hour"
+                name="hour"
+                interval={0}
+                tick={{ fontSize: 0 }}
+                tickLine={{ transform: 'translate(0, -6)' }}
+              />
+              <YAxis
+                type="number"
+                dataKey="index"
+                height={10}
+                width={80}
+                tick={false}
+                tickLine={false}
+                axisLine={false}
+                label={{ value: 'Staten Island', position: 'insideRight', fontSize: 13 }}
+              />
+              <ZAxis type="number" dataKey="value" domain={domain} range={range} />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
+              <Scatter data={data01} fill='#a4de6c' />
+            </ScatterChart>
+          </ResponsiveContainer>
 
-        <ResponsiveContainer width="100%" height={60}>
-          <ScatterChart
-            width={800}
-            height={60}
-            margin={{
-              top: 10,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <XAxis
-              type="category"
-              dataKey="hour"
-              name="hour"
-              interval={0}
-              tick={{ fontSize: 0 }}
-              tickLine={{ transform: 'translate(0, -6)' }}
-            />
-            <YAxis
-              type="number"
-              dataKey="index"
-              height={10}
-              width={80}
-              tick={false}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: 'Tuesday', position: 'insideRight', fontSize: 13 }}
-            />
-            <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-            <Scatter data={data01} fill='#a4de6c' />
-          </ScatterChart>
-        </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={60}>
+            <ScatterChart
+              width={800}
+              height={60}
+              margin={{
+                top: 10,
+                right: 0,
+                bottom: 0,
+                left: 0,
+              }}
+            >
+              <XAxis
+                type="category"
+                dataKey="hour"
+                name="hour"
+                interval={0}
+                tick={{ fontSize: 0 }}
+                tickLine={{ transform: 'translate(0, -6)' }}
+              />
+              <YAxis
+                type="number"
+                dataKey="index"
+                height={10}
+                width={80}
+                tick={false}
+                tickLine={false}
+                axisLine={false}
+                label={{ value: 'Brooklyn', position: 'insideRight' , fontSize: 12}}
+              />
+              <ZAxis type="number" dataKey="value" domain={domain} range={range} />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
+              <Scatter data={data02} fill='#82ca9d'/>
+            </ScatterChart>
+          </ResponsiveContainer>
 
-        <ResponsiveContainer width="100%" height={60}>
-          <ScatterChart
-            width={800}
-            height={60}
-            margin={{
-              top: 10,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <XAxis
-              type="category"
-              dataKey="hour"
-              name="hour"
-              interval={0}
-              tick={{ fontSize: 0 }}
-              tickLine={{ transform: 'translate(0, -6)' }}
-            />
-            <YAxis
-              type="number"
-              dataKey="index"
-              height={10}
-              width={80}
-              tick={false}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: 'Wednesday', position: 'insideRight' , fontSize: 12}}
-            />
-            <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-            <Scatter data={data02} fill='#82ca9d'/>
-          </ScatterChart>
-        </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={60}>
+            <ScatterChart
+              width={800}
+              height={60}
+              margin={{
+                top: 10,
+                right: 0,
+                bottom: 0,
+                left: 0,
+              }}
+            >
+              <XAxis
+                type="category"
+                dataKey="hour"
+                name="hour"
+                interval={0}
+                tick={{ fontSize: 0 }}
+                tickLine={{ transform: 'translate(0, -6)' }}
+              />
+              <YAxis
+                type="number"
+                dataKey="index"
+                height={10}
+                width={80}
+                tick={false}
+                tickLine={false}
+                axisLine={false}
+                label={{ value: 'Queens', position: 'insideRight' , fontSize: 13 }}
+              />
+              <ZAxis type="number" dataKey="value" domain={domain} range={range} />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
+              <Scatter data={data01} fill='#8dd1e1'/>
+            </ScatterChart>
+          </ResponsiveContainer>
 
-        <ResponsiveContainer width="100%" height={60}>
-          <ScatterChart
-            width={800}
-            height={60}
-            margin={{
-              top: 10,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <XAxis
-              type="category"
-              dataKey="hour"
-              name="hour"
-              interval={0}
-              tick={{ fontSize: 0 }}
-              tickLine={{ transform: 'translate(0, -6)' }}
-            />
-            <YAxis
-              type="number"
-              dataKey="index"
-              height={10}
-              width={80}
-              tick={false}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: 'Thursday', position: 'insideRight' , fontSize: 13 }}
-            />
-            <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-            <Scatter data={data01} fill='#8dd1e1'/>
-          </ScatterChart>
-        </ResponsiveContainer>
 
-        <ResponsiveContainer width="100%" height={60}>
-          <ScatterChart
-            width={800}
-            height={60}
-            margin={{
-              top: 10,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <XAxis
-              type="category"
-              dataKey="hour"
-              name="hour"
-              interval={0}
-              tick={{ fontSize: 0 }}
-              tickLine={{ transform: 'translate(0, -6)' }}
-            />
-            <YAxis
-              type="number"
-              dataKey="index"
-              height={10}
-              width={80}
-              tick={false}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: 'Friday', position: 'insideRight' , fontSize: 13 }}
-            />
-            <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-            <Scatter data={data02} fill="#8884d8" />
-          </ScatterChart>
-        </ResponsiveContainer>
-
-        <ResponsiveContainer width="100%" height={60}>
-          <ScatterChart
-            width={800}
-            height={60}
-            margin={{
-              top: 10,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <XAxis
-              type="category"
-              dataKey="hour"
-              name="hour"
-              interval={0}
-              tickLine={{ transform: 'translate(0, -6)' }}
-              tick={{ fontSize: 13 }}
-            />
-            <YAxis
-              type="number"
-              dataKey="index"
-              height={10}
-              width={80}
-              tick={false}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: 'Saturday', position: 'insideRight', fontSize: 13 }}
-            />
-            <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-            <Scatter data={data01} fill="#8884d8" />
-          </ScatterChart>
-        </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={60}>
+            <ScatterChart
+              width={800}
+              height={60}
+              margin={{
+                top: 10,
+                right: 0,
+                bottom: 0,
+                left: 0,
+              }}
+            >
+              <XAxis
+                type="category"
+                dataKey="hour"
+                name="hour"
+                interval={0}
+                tickLine={{ transform: 'translate(0, -6)' }}
+                tick={{ fontSize: 13 }}
+              />
+              <YAxis
+                type="number"
+                dataKey="index"
+                height={10}
+                width={80}
+                tick={false}
+                tickLine={false}
+                axisLine={false}
+                label={{ value: 'The Bronx', position: 'insideRight', fontSize: 13 }}
+              />
+              <ZAxis type="number" dataKey="value" domain={domain} range={range} />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
+              <Scatter data={data01} fill="#8884d8" />
+            </ScatterChart>
+          </ResponsiveContainer>
         </Paper>
       </div>
     );

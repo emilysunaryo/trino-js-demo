@@ -4,7 +4,12 @@ import { Paper, Typography } from '@mui/material';
 
 //testing comment
 
-const data = [
+
+interface AreaChartUberLyftProps {
+  rawData: [number, number, number, number, number][];
+}
+
+const testData = [
   {
     name: 'Page A',
     uv: 4000,
@@ -49,16 +54,28 @@ const data = [
   },
 ];
 
-class AreaChartUberLyft extends PureComponent {
+class AreaChartUberLyft extends PureComponent<AreaChartUberLyftProps> {
+
+  //Transform Raw Data from Trino Backend 
+  transformData(rawData: [number, number, number, number, number][]) {
+    return rawData.map(([name, uv, pv, amt]) => ({
+      name: `Page ${name}`, // Adjust this as needed
+      uv,
+      pv,
+      amt,
+    }));
+  }
   render() {
-    return (
-  
-  <Paper elevation={1} sx={{padding: 2, height: '100%'}}>
+    const { rawData } = this.props;
+    const data = this.transformData(rawData);
+
+  return (
+  <Paper elevation={1} sx={{padding: 3, height: '80%'}}>
     <Typography variant = "h6" sx = {{color: 'gray', fontSize: 15, fontFamily: 'Lato, Ariel, sans-serif'}}>Average Pay per Ride Based on Day of Week</Typography>
-      <ResponsiveContainer width="100%" height={350}>
+      <ResponsiveContainer width="100%" height='85%'>
         <AreaChart
       
-          data={data}
+          data={testData}
           margin={{
             top: 10,
             right: 30,
