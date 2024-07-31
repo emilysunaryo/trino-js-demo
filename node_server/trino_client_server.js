@@ -29,8 +29,8 @@ const trino =  Trino.create({
 
 // Queries
 const queryList = {
-  driverAvgPayByDay : `select 
-    case 
+  driverAvgPayByDay : `SELECT 
+    CASE 
         when day_of_week = 1 then 'Sunday'
         when day_of_week = 2 then 'Monday'
         when day_of_week = 3 then 'Tuesday'
@@ -38,30 +38,16 @@ const queryList = {
         when day_of_week = 5 then 'Thursday'
         when day_of_week = 6 then 'Friday'
         when day_of_week = 7 then 'Saturday'
-    end as days_of_week,
-    round(avg(driver_total_pay), 2) as avg_driver_pay,
+    END AS days_of_week,
+    ROUND(AVG(driver_total_pay), 2) as avg_driver_pay,
     business
-from 
-    silver_schema.nyc_rideshare_fare_analysis
-group by 
-    day_of_week,business
-order by 
-    business`,
-
-  rideRequestsByDay: `SELECT 
-    dayofweek,
-    COUNT(*) AS ride_requests,
-    ROUND(AVG(passenger_fare), 2) AS avg_passenger_fare,
-    ROUND(AVG(driver_total_pay), 2) AS avg_driver_total_pay,
-    ROUND(AVG(trip_length), 2) AS avg_trip_length
 FROM 
-    silver_schema.nyc_rideshare_peak_request_times
+    silver_schema.nyc_rideshare_fare_analysis
 GROUP BY 
-    dayofweek
+    day_of_week,business
 ORDER BY 
-    ride_requests DESC`,
-
-  avgPayByDistance: `SELECT 
+    business`,
+  rideRequestsByDistance: `SELECT 
     CASE 
         WHEN trip_length <= 1 THEN '0-1 miles'
         WHEN trip_length > 1 AND trip_length <= 3 THEN '1-3 miles'
@@ -69,13 +55,10 @@ ORDER BY
         WHEN trip_length > 5 AND trip_length <= 10 THEN '5-10 miles'
         ELSE '10+ miles'
     END AS distance_range,
-    avg(driver_total_pay) as avg_driver_pay,
-    avg(driver_total_pay / trip_length) as avg_payper_mile,
+    business,
     count(*) as ride_requests
 FROM
     silver_schema.nyc_rideshare_fare_analysis
-WHERE
-    trip_length > 0 AND business = 'Uber'
 GROUP BY
     CASE 
         WHEN trip_length <= 1 THEN '0-1 miles'
@@ -83,7 +66,8 @@ GROUP BY
         WHEN trip_length > 3 AND trip_length <= 5 THEN '3-5 miles'
         WHEN trip_length > 5 AND trip_length <= 10 THEN '5-10 miles'
         ELSE '10+ miles'
-    END
+    END,
+    business
 ORDER BY
     CASE 
         WHEN trip_length <= 1 THEN '0-1 miles'
@@ -166,7 +150,81 @@ FROM
 GROUP BY 
     weather_index
 ORDER BY 
-    weather_index`
+    weather_index`,
+    
+  rideRequestsByBoroughPerHour: `SELECT 
+    CASE 
+        when hour_of_day = 0 then '12AM'
+        when hour_of_day = 1 then '1AM'
+        when hour_of_day = 2 then '2AM'
+        when hour_of_day = 3 then '3AM'
+        when hour_of_day = 4 then '4AM'
+        when hour_of_day = 5 then '5AM'
+        when hour_of_day = 6 then '6AM'
+        when hour_of_day = 7 then '7AM'
+        when hour_of_day = 8 then '8AM'
+        when hour_of_day = 9 then '9AM'
+        when hour_of_day = 10 then '10AM'
+        when hour_of_day = 11 then '11AM'
+        when hour_of_day = 12 then '12PM'
+        when hour_of_day = 13 then '1PM'
+        when hour_of_day = 14 then '2PM'
+        when hour_of_day = 15 then '3PM'
+        when hour_of_day = 16 then '4PM'
+        when hour_of_day = 17 then '5PM'
+        when hour_of_day = 18 then '6PM'
+        when hour_of_day = 19 then '7PM'
+        when hour_of_day = 20 then '8PM'
+        when hour_of_day = 21 then '9PM'
+        when hour_of_day = 22 then '10PM'
+        when hour_of_day = 23 then '11PM'
+    END AS hour_of_days,
+    d.borough as dropoff_borough,
+    COUNT(*) AS ride_requests
+FROM
+   silver_schema.nyc_rideshare_fare_analysis r
+JOIN
+    taxi_zone_lookup.taxi_zones.zone_lookup d ON r.dropoff_location = d.location_id
+WHERE 
+    d.borough != 'Unknown'
+GROUP BY
+     d.borough, hour_of_day
+ORDER BY
+    hour_of_day`,
+
+  payAndRequestsByDay: `select 
+    case 
+        when day_of_week = 1 then 'Sunday'
+        when day_of_week = 2 then 'Monday'
+        when day_of_week = 3 then 'Tuesday'
+        when day_of_week = 4 then 'Wednesday'
+        when day_of_week = 5 then 'Thursday'
+        when day_of_week = 6 then 'Friday'
+        when day_of_week = 7 then 'Saturday'
+    end as days_of_week,
+    round(avg(driver_total_pay), 2) as avg_driver_pay,
+    count(*) as ride_requests
+from 
+    silver_schema.nyc_rideshare_fare_analysis
+group by 
+    day_of_week
+order by 
+    day_of_week`,
+
+  payAndRequestsByBorough: `select 
+    d.borough as borough,
+    round(avg(driver_total_pay), 2) as avg_driver_pay,
+    count(*) as ride_requests
+FROM
+   silver_schema.nyc_rideshare_fare_analysis r
+JOIN
+    taxi_zone_lookup.taxi_zones.zone_lookup d ON r.dropoff_location = d.location_id
+WHERE 
+    d.borough != 'Unknown'
+GROUP BY
+     d.borough
+ORDER BY
+    ride_requests`
 };
 
 
@@ -179,6 +237,8 @@ const executeQuery = async (query) => {
   console.log("testing return of query on server:", data )
   return data;
 }
+
+executeQuery(queryList.rideRequestsByBoroughPerHour);
 
 
 app.get('/api/query', async (req, res) => {
