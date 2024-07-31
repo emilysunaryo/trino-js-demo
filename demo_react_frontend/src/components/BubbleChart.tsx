@@ -2,76 +2,69 @@ import React, { PureComponent } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 import { Paper, Typography } from '@mui/material';
 
-const data01 = [
-  { hour: '12a', index: 1, value: 170 },
-  { hour: '1a', index: 1, value: 180 },
-  { hour: '2a', index: 1, value: 150 },
-  { hour: '3a', index: 1, value: 120 },
-  { hour: '4a', index: 1, value: 200 },
-  { hour: '5a', index: 1, value: 300 },
-  { hour: '6a', index: 1, value: 400 },
-  { hour: '7a', index: 1, value: 200 },
-  { hour: '8a', index: 1, value: 100 },
-  { hour: '9a', index: 1, value: 150 },
-  { hour: '10a', index: 1, value: 160 },
-  { hour: '11a', index: 1, value: 170 },
-  { hour: '12a', index: 1, value: 180 },
-  { hour: '1p', index: 1, value: 144 },
-  { hour: '2p', index: 1, value: 166 },
-  { hour: '3p', index: 1, value: 145 },
-  { hour: '4p', index: 1, value: 150 },
-  { hour: '5p', index: 1, value: 170 },
-  { hour: '6p', index: 1, value: 180 },
-  { hour: '7p', index: 1, value: 165 },
-  { hour: '8p', index: 1, value: 130 },
-  { hour: '9p', index: 1, value: 140 },
-  { hour: '10p', index: 1, value: 170 },
-  { hour: '11p', index: 1, value: 180 },
-];
 
-const data02 = [
-  { hour: '12a', index: 1, value: 160 },
-  { hour: '1a', index: 1, value: 180 },
-  { hour: '2a', index: 1, value: 150 },
-  { hour: '3a', index: 1, value: 120 },
-  { hour: '4a', index: 1, value: 200 },
-  { hour: '5a', index: 1, value: 300 },
-  { hour: '6a', index: 1, value: 100 },
-  { hour: '7a', index: 1, value: 200 },
-  { hour: '8a', index: 1, value: 100 },
-  { hour: '9a', index: 1, value: 150 },
-  { hour: '10a', index: 1, value: 160 },
-  { hour: '11a', index: 1, value: 160 },
-  { hour: '12a', index: 1, value: 180 },
-  { hour: '1p', index: 1, value: 144 },
-  { hour: '2p', index: 1, value: 166 },
-  { hour: '3p', index: 1, value: 145 },
-  { hour: '4p', index: 1, value: 150 },
-  { hour: '5p', index: 1, value: 160 },
-  { hour: '6p', index: 1, value: 180 },
-  { hour: '7p', index: 1, value: 165 },
-  { hour: '8p', index: 1, value: 130 },
-  { hour: '9p', index: 1, value: 140 },
-  { hour: '10p', index: 1, value: 160 },
-  { hour: '11p', index: 1, value: 180 },
-];
 
-const parseDomain = () => [
-  0,
-  Math.max(
-    Math.max.apply(
-      null,
-      data01.map((entry) => entry.value),
-    ),
-    Math.max.apply(
-      null,
-      data02.map((entry) => entry.value),
-    ),
-  ),
-];
+interface BubbleChartProps {
+  rawData: [any, any, any][];
+  toggleOption: string;
+}
 
-export default class Example extends PureComponent {
-  renderTooltip = (props: any) => {
+
+interface TransformedDataItem {
+  hour: string;
+  index: number;
+  value: number;
+}
+
+
+const parseDomain = (data: [string, string, number][]): number => {
+  let maxValue: number = 0;
+  data.forEach(([hour, location, value]) => {
+    if (maxValue < value) {
+      maxValue = value;
+    }
+  })
+  return maxValue;
+}
+    
+
+
+  
+
+const transformData = (data: [string, string, number][]): { [location: string]: TransformedDataItem[] } => {
+  const transformedData: { [location: string]: TransformedDataItem[] } = {};
+  data.forEach(([hour, location, value]) => {
+    if (!transformedData[location]) {
+      transformedData[location] = [];
+    }
+    const index = 1;
+    // Add the hour and value to the respective location
+    transformedData[location].push({ hour, index, value });
+  });
+
+  return transformedData;
+};
+
+const normalizeData = ( data: [string, string, number][]): [string, string, number][] => {
+  const transformedData: [string, string, number][] = [];
+  data.forEach(([hour, location, value]) => {
+    const normalizedVal = value / 1000;
+    transformedData.push([hour, location, normalizedVal]);
+  })
+  return transformedData;
+} 
+
+
+const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
+  const normalizedData = normalizeData(rawData);
+  const domain = [0, parseDomain(normalizedData)];
+  console.log("testing domain or max value from all data points:", domain);
+  const range = [16, 300];
+
+  const chartData = transformData(normalizedData);
+  console.log("testing chart data after normalization AND transformation:", chartData)
+
+  const renderTooltip = (props: any) => {
     const { active, payload } = props;
 
     if (active && payload && payload.length) {
@@ -84,8 +77,10 @@ export default class Example extends PureComponent {
             border: '1px solid #999',
             margin: 0,
             padding: 10,
+            fontSize: 13
           }}
         >
+  
           <p>{data.hour}</p>
           <p>
             <span>value: </span>
@@ -97,10 +92,6 @@ export default class Example extends PureComponent {
 
     return null;
   };
-
-  render() {
-    const domain = parseDomain();
-    const range = [16, 225];
 
     return (
       <div style={{ width: '100%', backgroundColor: '#fff', borderRadius: 10 }}>
@@ -134,14 +125,14 @@ export default class Example extends PureComponent {
                 tick={false}
                 tickLine={false}
                 axisLine={false}
-                label={{ value: 'Manhattan', position: 'insideRight', fontSize: 13 }}
+                label={{ value: 'Manhattan', position: 'insideRight', fontSize: 12 }}
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-              <Scatter data={data02} fill="#ffc658" />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
+              <Scatter data={chartData.Manhattan} fill="#ffc658" />
             </ScatterChart>
           </ResponsiveContainer>
-
+  
           <ResponsiveContainer width="100%" height={60}>
             <ScatterChart
               width={800}
@@ -169,13 +160,14 @@ export default class Example extends PureComponent {
                 tick={false}
                 tickLine={false}
                 axisLine={false}
-                label={{ value: 'Staten Island', position: 'insideRight', fontSize: 13 }}
+                label={{ value: 'Staten Island', position: 'insideRight', fontSize: 12 }}
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-              <Scatter data={data01} fill='#a4de6c' />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
+              <Scatter data={chartData["Staten Island"]} fill='#a4de6c' />
             </ScatterChart>
           </ResponsiveContainer>
+   
 
           <ResponsiveContainer width="100%" height={60}>
             <ScatterChart
@@ -207,11 +199,11 @@ export default class Example extends PureComponent {
                 label={{ value: 'Brooklyn', position: 'insideRight' , fontSize: 12}}
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-              <Scatter data={data02} fill='#82ca9d'/>
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
+              <Scatter data={chartData.Brooklyn} fill='#82ca9d'/>
             </ScatterChart>
           </ResponsiveContainer>
-
+  
           <ResponsiveContainer width="100%" height={60}>
             <ScatterChart
               width={800}
@@ -239,15 +231,14 @@ export default class Example extends PureComponent {
                 tick={false}
                 tickLine={false}
                 axisLine={false}
-                label={{ value: 'Queens', position: 'insideRight' , fontSize: 13 }}
+                label={{ value: 'Queens', position: 'insideRight' , fontSize: 12 }}
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-              <Scatter data={data01} fill='#8dd1e1'/>
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
+              <Scatter data={chartData.Queens} fill='#8dd1e1'/>
             </ScatterChart>
           </ResponsiveContainer>
-
-
+    
           <ResponsiveContainer width="100%" height={60}>
             <ScatterChart
               width={800}
@@ -265,7 +256,7 @@ export default class Example extends PureComponent {
                 name="hour"
                 interval={0}
                 tickLine={{ transform: 'translate(0, -6)' }}
-                tick={{ fontSize: 13 }}
+                tick={{ fontSize: 6 }}
               />
               <YAxis
                 type="number"
@@ -275,15 +266,20 @@ export default class Example extends PureComponent {
                 tick={false}
                 tickLine={false}
                 axisLine={false}
-                label={{ value: 'The Bronx', position: 'insideRight', fontSize: 13 }}
+                label={{ value: 'The Bronx', position: 'insideRight', fontSize: 12 }}
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
-              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={this.renderTooltip} />
-              <Scatter data={data01} fill="#8884d8" />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
+              <Scatter data={chartData.Bronx} fill="#8884d8" />
             </ScatterChart>
           </ResponsiveContainer>
+    
+
+          <Typography variant = "h6" sx = {{color: 'gray', fontSize: 12, fontFamily: 'Lato, Ariel, sans-serif', textAlign: 'left'}}> * Note: Data scaled down by 1000 </Typography>
         </Paper>
       </div>
     );
-  }
 }
+
+
+export default BubbleChart

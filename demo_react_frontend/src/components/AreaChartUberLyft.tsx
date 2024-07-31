@@ -1,81 +1,56 @@
 import React, {useEffect, useState, PureComponent} from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer} from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend} from 'recharts';
 import { Paper, Typography } from '@mui/material';
 
-//testing comment
+//can be toggled by business only!!!!!
 
 
 interface AreaChartUberLyftProps {
-  rawData: [number, number, number, number, number][];
+  rawData: [any, any, any][];
+  toggleOption: string;
+}
+interface TransformedDataItem {
+  name: string;
+  Lyft: number;
+  Uber: number;
 }
 
-const testData = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
 
-class AreaChartUberLyft extends PureComponent<AreaChartUberLyftProps> {
 
-  //Transform Raw Data from Trino Backend 
-  transformData(rawData: [number, number, number, number, number][]) {
-    return rawData.map(([name, uv, pv, amt]) => ({
-      name: `Page ${name}`, // Adjust this as needed
-      uv,
-      pv,
-      amt,
-    }));
-  }
-  render() {
-    const { rawData } = this.props;
-    const data = this.transformData(rawData);
+const transformData = (data: [string, number, string][]): TransformedDataItem[] => {
+  const daysOfWeek: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  // Initialize result array with all days and default values
+  const result: TransformedDataItem[] = daysOfWeek.map(day => ({
+    name: day,
+    Lyft: 0,
+    Uber: 0
+  }));
+
+  // Populate the result array with the actual values from raw data
+  data.forEach(([day, value, type]) => {
+    const dayData = result.find(d => d.name === day);
+    if (dayData) {
+      dayData[type as 'Lyft' | 'Uber'] = value;
+    }
+  });
+
+  return result;
+};
+
+const domain: number[] = [30, 50];
+
+const AreaChartUberLyft: React.FC<AreaChartUberLyftProps> = ({rawData, toggleOption}) => {
+
+    const chartData = transformData(rawData);
 
   return (
-  <Paper elevation={1} sx={{padding: 3, height: '80%'}}>
-    <Typography variant = "h6" sx = {{color: 'gray', fontSize: 15, fontFamily: 'Lato, Ariel, sans-serif'}}>Average Pay per Ride Based on Day of Week</Typography>
+  <Paper elevation={1} sx={{padding: 3, height: '84%'}}>
+    <Typography variant = "h6" sx = {{color: 'gray', fontSize: 15, fontFamily: 'Lato, Ariel, sans-serif'}}>Avg Driver Pay/Ride Based on Day of Week</Typography>
       <ResponsiveContainer width="100%" height='85%'>
         <AreaChart
       
-          data={testData}
+          data={chartData}
           margin={{
             top: 10,
             right: 30,
@@ -84,19 +59,19 @@ class AreaChartUberLyft extends PureComponent<AreaChartUberLyftProps> {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" tick = {{fontSize: 12}}/>
-          <YAxis tick = {{fontSize: 12}} />
-          <Tooltip />
-          <Area type="monotone" dataKey="uv" stackId="1" stroke="#8884d8" fill="#8884d8" />
-          <Area type="monotone" dataKey="pv" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-          <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" />
+          <XAxis dataKey="name" tick = {{fontSize: 10}}/>
+          <YAxis tick = {{fontSize: 12}} domain ={domain}/>
+          <Tooltip contentStyle = {{fontSize: 13}}/>
+          {(toggleOption === 'All' || toggleOption === 'Uber') && <Area type="monotone" dataKey="Uber" stackId="2" stroke="#82ca9d" fill="#82ca9d" />}
+          {(toggleOption === 'All' || toggleOption === 'Lyft') && <Area type="monotone" dataKey="Lyft" stackId="2" stroke="#8884d8" fill="#8884d8" />}
+          <Legend wrapperStyle={{fontSize: 13}}/>
         </AreaChart>
       </ResponsiveContainer>
   </Paper>
        
   
     );
-  }
+  
 }
 
 

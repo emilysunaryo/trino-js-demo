@@ -1,55 +1,61 @@
 import React, {useEffect, useState} from 'react';
-import { Grid, AppBar, Toolbar, Typography, CssBaseline, Container, SelectChangeEvent, Button, Box} from '@mui/material'
+import { Grid, AppBar, Toolbar, Typography, CssBaseline, Container, SelectChangeEvent, Button, Box, CircularProgress} from '@mui/material'
 import Heatmap  from './Heatmap'
 import BubbleChart from './BubbleChart'
-import RadarChart from './RadarChart'
+import StackedBarChart from './StackedBarChart'
 import AreaChartUberLyft from './AreaChartUberLyft'
 import CardComponent from './CardComponent';
 import SelectComponent from './SelectComponent';
 import './styles/DashboardStyle.css'
 import axios from 'axios';
-import { alignProperty } from '@mui/material/styles/cssUtils';
 import WeatherLineChart from './WeatherLineChart';
 
+
 function Dashboard() {
+    const [date, setDate] = useState<string>('All');
+    const [business, setBusiness] = useState<string>('All');
+    const [borough, setBorough] = useState<string>('All');;
+    const [areaChartData, setAreaChartData] = useState<[any, any, any][]>([]);
+    const [bubbleChartData, setBubbleChartData] = useState<[any, any, any][]>([]);
+    const [barChartData, setBarChartData] = useState<[any, any, any][]>([]);
+    const [cardData1, setCardData1] = useState<[any, any, any][]>([]);
+    const [cardData2, setCardData2] = useState<[any, any, any][]>([]);
+    const [card1, setCard1] = useState<number>(0);
+    const [card2, setCard2] = useState<string>('');
+    const [card3, setCard3] = useState<number>(0);
+    const [card4, setCard4] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
-    const [date, setDate] = useState<string>('');
-    const [business, setBusiness] = useState<string>('');
-    const [borough, setBorough] = useState<string>('');
-    const [testData, setTestData] = useState<number[][]>([]);
-    const [areaChartData, setAreaChartData] = useState<[number, number, number, number, number][]>([]);
     const [weatherData, setWeatherData] = useState<[number, number, number, number, number, number, number][]>([]);
-    const [bubbleChartData, setBubbleChartData] = useState<string[][]>([]);
-    const [radarChartData, setRadarChartData] = useState<string[][]>([]);
     const [heatmapChartData, setHeatmapChartData] = useState<string[][]>([]);
-    const [card1, setCard1] = useState<any>();
-    const [card2, setCard2] = useState<any>();
-    const [card3, setCard3] = useState<any>();
-    const [card4, setCard4] = useState<any>();
+
 
  //TODO: interesting to see: send a call for a data product , managing queries within galaxy!!, call reference to query within a data product
 
-
- //Renders once when the page mounts, calls api in node server and passes data to child graph components as props
+ //Renders once when the page mounts, calls api in node server and passes data to child graph components as props. 
+ //Currently hardcoding API endpoint into URL
 
   useEffect(() => {
     const handleQueries = async () => {
         try {
-            const [driverPayResponseData, rideRequestsByDayResponseData, avgPayByDistanceData, weatherNormalizationData ] = await Promise.all([
+            const [driverPayResponseData, rideRequestsByBorough, rideRequestsByDistance, payRequestByDay, payRequestByBorough ] = await Promise.all([
                 axios.get('http://localhost:3001/api/query?query=driverAvgPayByDay'),
-                axios.get('http://localhost:3001/api/query?query=rideRequestsByDay'),
-                axios.get('http://localhost:3001/api/query?query=avgPayByDistance'),
-                axios.get('http://localhost:3001/api/query?query=weatherNormalization')
+                axios.get('http://localhost:3001/api/query?query=rideRequestsByBoroughPerHour'),
+                axios.get('http://localhost:3001/api/query?query=rideRequestsByDistance'),
+                axios.get('http://localhost:3001/api/query?query=payAndRequestsByDay'),
+                axios.get('http://localhost:3001/api/query?query=payAndRequestsByBorough'),
+                // axios.get('http://localhost:3001/api/query?query=weatherNormalization')
             ]);
             setAreaChartData(driverPayResponseData.data);
-            setRadarChartData(avgPayByDistanceData.data);
-            setWeatherData(weatherNormalizationData.data);
-            setCard1(rideRequestsByDayResponseData);
-
-            console.log("testing data from server in react frontend:", driverPayResponseData.data);
-            console.log("testing second query from server, does promise.all work in this case?:", rideRequestsByDayResponseData.data);
-            setTestData(driverPayResponseData.data);
+            setBubbleChartData(rideRequestsByBorough.data);
+            setBarChartData(rideRequestsByDistance.data);
+            setCardData1(payRequestByDay.data);
+            setCardData2(payRequestByBorough.data);
+            // setWeatherData(weatherNormalizationData.data);
             setLoading(false);
+
+
+
+            //i need to set card 1 - 4 initial values in here first on mount 
         } catch(error) {
             console.log("error fetching data:", error)
         }
@@ -58,8 +64,57 @@ function Dashboard() {
     handleQueries();
   },[]);
 
-  console.log("testing testdata:", testData);
 
+
+  useEffect(() => {
+    const handleDateChangesForCardComponent = (data: [any, any, any][]) => {
+        const extractDayData = (day: string) => {
+            const result = data.find(([dayOfWeek]) => dayOfWeek === date);
+            return result
+        };
+        const finalData = extractDayData(date);
+        if(finalData) {
+            const [, avgPay, requests] = finalData;
+
+            const commaSeparatedVal = parseInt(requests);
+            setCard1(avgPay);
+            setCard2(formatNumberWithCommas(commaSeparatedVal));
+        }
+
+    };
+    handleDateChangesForCardComponent(cardData1);
+  }, [cardData1, date])
+
+
+  
+  useEffect(() => {
+    const handleBoroughChangesForCardComponent = (data: [any, any, any][]) => {
+        const extractBoroughData = (borough: string) => {
+            const result = data.find(([b]) => b === borough);
+            return result
+          };
+      
+          const finalData = extractBoroughData(borough);
+          if (finalData) {
+            const [, avgPay, requests] = finalData; // Destructure array
+            const commaSeparatedVal = parseInt(requests);
+            setCard3(avgPay);
+            setCard4(formatNumberWithCommas(commaSeparatedVal));
+          }
+        
+    }
+    handleBoroughChangesForCardComponent(cardData2);
+  }, [borough, cardData2])
+
+
+  const formatNumberWithCommas = (number: number): string => {
+    return new Intl.NumberFormat().format(number);
+  };
+
+
+    const handleAllInitialRender = () => {
+
+    }
 
     const handleDateChange = (event: SelectChangeEvent<string>) => {
         setDate(event.target.value);
@@ -89,7 +144,7 @@ function Dashboard() {
 
     const boroughFilterOptions = [
         {value: 'All', label: 'All'},
-        {value: 'The Bronx', label: 'The Bronx'},
+        {value: 'Bronx', label: 'Bronx'},
         {value: 'Brooklyn', label: 'Brooklyn'},
         {value: 'Manhattan', label: 'Manhattan'},
         {value: 'Queens', label: 'Queens'},
@@ -146,61 +201,76 @@ return (
          </Box>
      </Box>
 
+
+{/* {loading ?  (
+    <CircularProgress /> 
+) : ( */}
+
 <Grid container spacing={2} sx={{ padding: 5 }}>
-        <Grid item xs={12} md={3}>
-            <CardComponent
-            cardTitle = "example title"
-            value = {1000}
-            description = "example description"
-            />
-        </Grid>
-
-        <Grid item xs={12} md={3} >
-            <CardComponent
-            cardTitle = "example title"
-            value = {1000}
-            description = "example description"
-            />
-        </Grid>
-
-        <Grid item xs={12} md={3}>
-            <CardComponent
-            cardTitle = "example title"
-            value = {1000}
-            description = "example description"
-            />
-        </Grid>
-
-        <Grid item xs={12} md={3} >
-            <CardComponent
-            cardTitle = "example title"
-            value = {1000}
-            description = "example description"
-            />
-        </Grid>
-    <Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 10, marginTop: 2 }}>
-        <AreaChartUberLyft 
-            rawData = {areaChartData}
+    <Grid item xs={12} md={3}>
+        <CardComponent
+        cardTitle = "Avg Driver Pay by Day Of Week"
+        value =  {card1}
+        description = {date}
         />
     </Grid>
-    <Grid item xs={12} md={5} sx={{ height: 450, marginBottom: 10, marginTop: 2  }}>
-        <BubbleChart />
+
+    <Grid item xs={12} md={3} >
+        <CardComponent
+        cardTitle = "Avg Ride Requests by Day of Week"
+        value = {card2}
+        description = {date}
+        />
     </Grid>
-    <Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 10, marginTop: 2  }}>
-        <RadarChart />
+
+    <Grid item xs={12} md={3}>
+        <CardComponent
+        cardTitle = "Avg Driver Pay by Borough"
+        value = {card3}
+        description = {borough}
+        />
     </Grid>
-    <Grid item xs={12} md={4} sx={{ height: 450, marginBottom: 1, marginTop: 2 }}>
-    <WeatherLineChart />
-  
+
+    <Grid item xs={12} md={3} >
+        <CardComponent
+        cardTitle = "Avg Ride Requests by Borough"
+        value = {card4}
+        description = {borough}
+        />
     </Grid>
-    <Grid item xs={12} md={8} sx={{ height: 450, marginBottom: 1, marginTop: 2  }}>
-    <AreaChartUberLyft
+<Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 10, marginTop: 2 }}>
+    <AreaChartUberLyft 
         rawData = {areaChartData}
+        toggleOption={business}
     />
-
-    </Grid>
 </Grid>
+<Grid item xs={12} md={5} sx={{ height: 450, marginBottom: 10, marginTop: 2  }}>
+    <BubbleChart 
+    rawData = {bubbleChartData}
+    toggleOption={borough}
+    
+    />
+</Grid>
+<Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 10, marginTop: 2  }}>
+    <StackedBarChart 
+    rawData= {barChartData}
+    toggleOption = {business}
+    
+    />
+</Grid>
+<Grid item xs={12} md={4} sx={{ height: 450, marginBottom: 1, marginTop: 2 }}>
+<WeatherLineChart />
 
+</Grid>
+<Grid item xs={12} md={8} sx={{ height: 450, marginBottom: 1, marginTop: 2  }}>
+<AreaChartUberLyft
+    rawData = {areaChartData}
+    toggleOption={business}
+/>
+
+</Grid>
+</Grid>
+{/* )} */}
 
 <Heatmap
        rideData = 
