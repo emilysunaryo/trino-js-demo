@@ -6,7 +6,7 @@ This project leverages the trino-js-client library to demonstrate the power of T
 
 ## Key Technologies
 - **JavaScript and TypeScript**: The project is primarily built using JavaScript and TypeScript, showcasing their effectiveness in developing modern, scalable web applications.
-- **Node.js**: Utilized for server-side logic and data handling, enabling an efficient backend infrastructure.
+- **Node.js**: Utilized for server-side logic, api handling, and query management, enabling an efficient backend infrastructure.
 - **React**: Used for building interactive and dynamic user interfaces of the dashboard, making use of its component-based architecture for a seamless user experience
 - **trino-js-client**: For connecting to the Starburst Galaxy server and executing queries within Node.js server-side logic.
 - **Starburst Galaxy**: For hosting the data.
