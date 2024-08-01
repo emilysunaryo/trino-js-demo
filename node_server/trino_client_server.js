@@ -238,7 +238,7 @@ const executeQuery = async (query) => {
   return data;
 }
 
-executeQuery(queryList.rideRequestsByBoroughPerHour);
+executeQuery(queryList.weatherNormalization);
 
 
 app.get('/api/query', async (req, res) => {
