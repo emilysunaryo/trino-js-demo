@@ -1,103 +1,127 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
 import React, { PureComponent } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, CustomizedProps, LabelList, TooltipProps } from 'recharts';
+import { Paper, Typography } from '@mui/material';
 
-const data = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
 
-interface CustomizedLabelProps {
+
+interface WeatherLineChartProps {
+  rawData: [any, any, any, any, any, any, any][];
+}
+
+
+interface CustomizedWeatherDataProps {
+ weather_index: number;
+ days_count: number;
+ total_ride_requests: number;
+ avg_tmin: number;
+ avg_tmax: number;
+ avg_prcp: number;
+ avg_snow: number;
+}
+
+
+
+interface WeatherLineLabelProps {
   x: number;
   y: number;
-  stroke: string;
-  value: any;
+  value: number;
 }
 
-interface CustomizedAxisTickProps {
-  x: number;
-  y: number;
-  stroke: string;
-  payload: { value: string | number };
+
+
+const transformData = (data: [number, number, number, number, number, number, number][]): CustomizedWeatherDataProps[] => {
+  return data.map(([weather_index, days_count, total_ride_requests, avg_tmin, avg_tmax, avg_prcp, avg_snow]) => ({
+    weather_index,
+    days_count,
+    total_ride_requests,
+    avg_tmin,
+    avg_tmax,
+    avg_prcp,
+    avg_snow
+  }));
 }
 
-class CustomizedLabel extends PureComponent<CustomizedLabelProps> {
-  render() {
-    const { x, y, stroke, value } = this.props;
 
+
+const WeatherLineChartCustomizedLabel: React.FC<any> = ({x, y, value}) => {
+  return (
+    <text x={x} y={y} dy={-15} fill='gray' fontSize={12} textAnchor="middle">
+      {value}
+    </text>
+  )
+}
+
+
+const normalizeData = ( data: [number, number, number, number, number, number, number][]): [number, number, number, number, number, number, number][] => {
+  const transformedData: [number, number, number, number, number, number, number][] = [];
+  data.forEach(([weather_index, days_count, total_ride_requests, avg_tmin, avg_tmax, avg_prcp, avg_snow]) => {
+    const normalizedVal = Math.round(total_ride_requests / 1000);
+    transformedData.push([weather_index, days_count, normalizedVal, avg_tmin, avg_tmax, avg_prcp, avg_snow]);
+  })
+  return transformedData;
+} 
+
+const WeatherLineChart: React.FC<WeatherLineChartProps> = ({rawData}) => {
+  const normalizedData = normalizeData(rawData);
+  const chartData = transformData(normalizedData);
+  const renderTooltip = (props: any) => {
+    const { active, payload } = props;
+
+    if (active && payload && payload.length) {
+      const data = payload[0] && payload[0].payload;
+
+      return (
+        <div
+          style={{
+            backgroundColor: '#fff',
+            border: '1px solid #999',
+            margin: 0,
+            padding: 10,
+            fontSize: 13
+          }}
+        >
+
+          <p>
+          <span> <strong>Weather Composite Index</strong> </span>
+            {data.weather_index}
+            </p>
+          <p>
+            <span><strong>Total Tide Requests</strong> </span>
+            {data.total_ride_requests}
+          </p>
+          <p>
+            <span> <strong>Average Min Temp F: </strong> </span>
+            {data.avg_tmin}
+            
+            </p>
+            <p>
+            <span> <strong>Average Max Temp F:</strong> </span>
+            {data.avg_tmax}
+            </p>
+            <p>
+            <span> <strong>Average Percipitation: </strong> </span>
+            {data.avg_prcp}
+            </p>
+            <p>
+            <span><strong>Average Snow: </strong></span>
+            {data.avg_snow}
+            </p>
+        </div>
+      );
+    }
+
+    return null;
+  };
     return (
-      <text x={x} y={y} dy={-4} fill={stroke} fontSize={10} textAnchor="middle">
-        {value}
-      </text>
-    );
-  }
-}
-
-class CustomizedAxisTick extends PureComponent<CustomizedAxisTickProps> {
-  render() {
-    const { x, y, stroke, payload } = this.props;
-
-    return (
-      <g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={16} textAnchor="end" fill="#666" transform="rotate(-35)">
-          {payload.value}
-        </text>
-      </g>
-    );
-  }
-}
-
-export default class WeatherLineChart extends PureComponent {
-  static demoUrl = 'https://codesandbox.io/p/sandbox/line-chart-with-customized-label-d6rytv';
-
-  render() {
-    return (
-      <ResponsiveContainer width="100%" height="100%">
+    <Paper elevation={1} sx={{padding: 3, height: '100%'}}>
+      <Typography variant = "h6" sx = {{color: 'gray', fontSize: 17, fontFamily: 'Lato, Ariel, sans-serif', marginBottom: 2}}> Average Ride Requests based on Weather Composite Index</Typography>
+      <ResponsiveContainer width="100%" height="85%">
         <LineChart
           width={500}
-          height={300}
-          data={data}
+          height={310}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,
@@ -106,17 +130,36 @@ export default class WeatherLineChart extends PureComponent {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" height={60} tick={(props) => <CustomizedAxisTick {...props} />} />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" label={(props) => <CustomizedLabel {...props} />} />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-        </LineChart>
+          <XAxis dataKey="weather_index" height={25} tick={{fontSize:10}}  />
+          <YAxis  dataKey = "total_ride_requests" tick={{ fontSize: 13 }}/>
+          <Tooltip  wrapperStyle={{fontSize: 13}} content={renderTooltip}/>
+      
+          <Line type="monotone" dataKey="total_ride_requests" stroke="#8884d8" strokeWidth={2}>
+            <LabelList
+              dataKey="total_ride_requests"
+              content={(props: any) => {
+                const { x, y, index } = props;
+                if (index === undefined) return null;
+                const dataPoint = chartData[index];
+                return (
+                  <WeatherLineChartCustomizedLabel
+                    x={x}
+                    y={y}
+                    value={dataPoint.total_ride_requests}
+                  />
+                );
+              }}
+            />
+          </Line>
+          </LineChart>
       </ResponsiveContainer>
+      <Typography variant = "h6" sx = {{color: 'gray', fontSize: 12, fontFamily: 'Lato, Ariel, sans-serif'}}> Weather Parameters (tmin, tmax, precipitation, snow)</Typography>
+      <Typography variant = "h6" sx = {{color: 'gray', fontSize: 9, fontFamily: 'Lato, Ariel, sans-serif', marginBottom: 2, textAlign: 'left'}}> *Note: Data scaled down by 1000</Typography>
+      </Paper>
+
     );
-  }
 }
 
 
 
+export default WeatherLineChart

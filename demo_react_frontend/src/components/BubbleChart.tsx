@@ -97,7 +97,6 @@ const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
       <div style={{ width: '100%', backgroundColor: '#fff', borderRadius: 10 }}>
         <Paper elevation={1} sx={{padding: 3, height: '100%'}}>
         <Typography variant = "h6" sx = {{color: 'gray', fontSize: 15, fontFamily: 'Lato, Ariel, sans-serif', marginBottom: 2}}> Ride Requests in NY Boroughs By Hour</Typography>
-      
           <ResponsiveContainer width="100%" height={66}>
             <ScatterChart
               width={800}
@@ -132,6 +131,8 @@ const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
               <Scatter data={chartData.Manhattan} fill="#ffc658" />
             </ScatterChart>
           </ResponsiveContainer>
+      
+
   
           <ResponsiveContainer width="100%" height={60}>
             <ScatterChart

@@ -21,11 +21,11 @@ function Dashboard() {
     const [cardData1, setCardData1] = useState<[any, any, any][]>([]);
     const [cardData2, setCardData2] = useState<[any, any, any][]>([]);
     const [card1, setCard1] = useState<number>(0);
-    const [card2, setCard2] = useState<string>('');
+    const [card2, setCard2] = useState<string>('0');
     const [card3, setCard3] = useState<number>(0);
-    const [card4, setCard4] = useState<string>('');
+    const [card4, setCard4] = useState<string>('0');
     const [loading, setLoading] = useState<boolean>(true);
-    const [weatherData, setWeatherData] = useState<[number, number, number, number, number, number, number][]>([]);
+    const [weatherData, setWeatherData] = useState<[any, any, any, any, any, any, any][]>([]);
     const [heatmapChartData, setHeatmapChartData] = useState<string[][]>([]);
 
 
@@ -37,23 +37,21 @@ function Dashboard() {
   useEffect(() => {
     const handleQueries = async () => {
         try {
-            const [driverPayResponseData, rideRequestsByBorough, rideRequestsByDistance, payRequestByDay, payRequestByBorough ] = await Promise.all([
+            const [driverPayResponseData, rideRequestsByBorough, rideRequestsByDistance, payRequestByDay, payRequestByBorough, weatherNormalizationData ] = await Promise.all([
                 axios.get('http://localhost:3001/api/query?query=driverAvgPayByDay'),
                 axios.get('http://localhost:3001/api/query?query=rideRequestsByBoroughPerHour'),
                 axios.get('http://localhost:3001/api/query?query=rideRequestsByDistance'),
                 axios.get('http://localhost:3001/api/query?query=payAndRequestsByDay'),
                 axios.get('http://localhost:3001/api/query?query=payAndRequestsByBorough'),
-                // axios.get('http://localhost:3001/api/query?query=weatherNormalization')
+                axios.get('http://localhost:3001/api/query?query=weatherNormalization')
             ]);
             setAreaChartData(driverPayResponseData.data);
             setBubbleChartData(rideRequestsByBorough.data);
             setBarChartData(rideRequestsByDistance.data);
             setCardData1(payRequestByDay.data);
             setCardData2(payRequestByBorough.data);
-            // setWeatherData(weatherNormalizationData.data);
+            setWeatherData(weatherNormalizationData.data);
             setLoading(false);
-
-
 
             //i need to set card 1 - 4 initial values in here first on mount 
         } catch(error) {
@@ -206,7 +204,7 @@ return (
     <CircularProgress /> 
 ) : ( */}
 
-<Grid container spacing={2} sx={{ padding: 5 }}>
+<Grid container spacing={2} sx={{ padding: 7 }}>
     <Grid item xs={12} md={3}>
         <CardComponent
         cardTitle = "Avg Driver Pay by Day Of Week"
@@ -238,31 +236,33 @@ return (
         description = {borough}
         />
     </Grid>
-<Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 10, marginTop: 2 }}>
+<Grid item xs={12} md={3.5} sx={{ height: 450, marginTop: 2 }}>
     <AreaChartUberLyft 
         rawData = {areaChartData}
         toggleOption={business}
     />
 </Grid>
-<Grid item xs={12} md={5} sx={{ height: 450, marginBottom: 10, marginTop: 2  }}>
+<Grid item xs={12} md={5} sx={{ height: 450, marginTop: 2  }}>
     <BubbleChart 
     rawData = {bubbleChartData}
     toggleOption={borough}
     
     />
 </Grid>
-<Grid item xs={12} md={3.5} sx={{ height: 450, marginBottom: 10, marginTop: 2  }}>
+<Grid item xs={12} md={3.5} sx={{ height: 450,  marginTop: 2  }}>
     <StackedBarChart 
     rawData= {barChartData}
     toggleOption = {business}
     
     />
 </Grid>
-<Grid item xs={12} md={4} sx={{ height: 450, marginBottom: 1, marginTop: 2 }}>
-<WeatherLineChart />
+<Grid item xs={12} md={6} sx={{ height: 450, marginBottom: 1}}>
+<WeatherLineChart
+    rawData = {weatherData}
+/>
 
 </Grid>
-<Grid item xs={12} md={8} sx={{ height: 450, marginBottom: 1, marginTop: 2  }}>
+<Grid item xs={12} md={6} sx={{ height: 450, marginBottom: 1 }}>
 <AreaChartUberLyft
     rawData = {areaChartData}
     toggleOption={business}

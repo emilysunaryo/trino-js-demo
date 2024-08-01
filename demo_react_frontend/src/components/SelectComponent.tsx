@@ -12,15 +12,15 @@ interface SelectComponentProps {
 function SelectComponent({ helperText, value, onChange, options}: SelectComponentProps) {
     return (
     <Box>
-        <FormControl sx={{ width: 175, backgroundColor: '#fff', borderRadius: 3}}>
+        <FormControl sx={{ width: 175, backgroundColor: '#fff', borderRadius: 3, color: 'gray'}}>
             <Select 
-              sx = {{borderRadius: 3}}
+              sx = {{borderRadius: 3, color: 'gray'}}
                labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 value={value}  
                 onChange = {onChange}>
                 {options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
+                    <MenuItem sx = {{color: 'gray'}}key={option.value} value={option.value}>
                      {option.label}
                     </MenuItem>
                 ))}
