@@ -2,20 +2,16 @@
 
 ## Overview
 
-This project leverages the trino-js-client library to demonstrate the power of Trino as a backend engine for data-driven applications. The project integrates open-source rideshare data into Starburst Galaxy, creating a web application dashboard designed to provide insights into rideshare and traffic data across major metropolitan areas. This dashboard inspired application is designed to highlight how variability—such as borough location and weather affects rideshare and traffic data points. By leveraging Trino as a powerful querying engine and integrating with Starburst Galaxy, the project showcases how modern JavaScript/TypeScript frameworks and libraries can be used to derive actionable insights from complex data sets.
+By leveraging the power of Trino, modern languages like Typescript and Starburst’s managed services, this project aims to enable Software Developers to facilitate data handling and use these integrated technologies as a dependable backend system for data driven applications. The project integrates open-source rideshare data into Starburst Galaxy, creating a web application dashboard designed to provide insights into rideshare and traffic data across major metropolitan areas. This dashboard inspired application is designed to highlight how variability—such as borough location and weather affects rideshare and traffic data points. By leveraging Trino as a powerful querying engine and integrating with Starburst Galaxy, the project showcases how modern JavaScript/TypeScript frameworks and libraries can be used to derive actionable insights from complex data sets.
 
 ## Key Technologies
 - **JavaScript and TypeScript**: The project is primarily built using JavaScript and TypeScript, showcasing their effectiveness in developing modern, scalable web applications.
 - **Node.js**: Utilized for server-side logic, api handling, and query management, enabling an efficient backend infrastructure.
 - **React**: Used for building interactive and dynamic user interfaces of the dashboard, making use of its component-based architecture for a seamless user experience
-- **trino-js-client**: For connecting to the Starburst Galaxy server and executing queries within Node.js server-side logic.
-- **Starburst Galaxy**: For hosting the data.
+- **trino-js-client**: For connecting to the Starburst Galaxy server and executing queries within Node.js server-side logic. Provides us the power to federate data across multiple sources to power our application
+- **Starburst Galaxy**: Accessing data configured within Galaxy Catalogs across multiple locations
 
 
-## Features
-- **Data Storage**: Manually uploaded data into an AWS S3 bucket
-- **Trino Client**: Using a Trino client to query data from a Starburst Galaxy server.
-- **Dynamic UI**: Includes a react frontend application visually displaying data queried from Data Source
 
 ## Datasets
 The project uses the following Kaggle datasets:
