@@ -3,22 +3,23 @@ import {BasicAuth, Trino} from 'trino-client';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
-// Load environment variables from .env
+// Load environment variables from .env, usually password and username information
 dotenv.config();
 
-// Express Configurations 
+// Express Configurations to set up our backend server
 const app = express();
 const port = 3001;
 
 app.use(cors());
 app.use(express.json());
 
-// Trino Client connected on Galaxy Server
+// Authorization parameters, including username and password from Starburst Galaxy Account
 const auth = new BasicAuth(process.env.GALAXY_USERNAME, process.env.GALAXY_PASSWORD);
 const sslOptions = {
   rejectUnauthorized: true
 };
 
+//Instantiated Trino object populated by correct parameters 
 const trino =  Trino.create({
   server:"https://emilysunaryo-free-cluster.trino.galaxy.starburst.io",
   catalog: 'nyc_uber_rides',
@@ -27,7 +28,7 @@ const trino =  Trino.create({
   ssl: sslOptions
 });
 
-// Queries
+// List of static queries. Referenced by name in the object
 const queryList = {
   driverAvgPayByDay : `SELECT 
     CASE 
@@ -228,7 +229,7 @@ ORDER BY
 };
 
 
-// Query functions to access data through Trino-js Client 
+// Query functions to access data through Trino-js Client.  
 const executeQuery = async (query) => {
   const iter = await trino.query(query);
   const data = await iter
@@ -241,8 +242,9 @@ const executeQuery = async (query) => {
 executeQuery(queryList.weatherNormalization);
 
 
+//API Architecture, reads in the name of the query from url parameters, checks existence of query.
 app.get('/api/query', async (req, res) => {
-  const queryType =  req.query.query; //takes an input of query that gets passed in from the Dashboard Component in the react frontend 
+  const queryType =  req.query.query; //Takes an input of query that gets passed in from the Dashboard Component in the react frontend 
   if (!queryType || !queryList[queryType]) {
     res.status(400).send('Invalid Query Type')
   }
