@@ -15,10 +15,10 @@ function CardComponent({cardTitle, value, description }: CardComponentProps) {
             <Typography sx={{ fontSize: 14 }} color="gray" gutterBottom>
               {cardTitle}
             </Typography>
-            <Typography variant="h5" component="div" fontSize={50} color = "gray" marginTop={4}>
+            <Typography variant="h5" component="div" fontSize={50} color = "gray" marginTop={5}>
               <b>{value}</b> 
             </Typography>
-            <Typography sx={{ mb: 1.5 }} color="gray">
+            <Typography sx={{ mb: 1.5, fontSize: 13 }} color="gray">
             {description}
             </Typography>
           </CardContent>

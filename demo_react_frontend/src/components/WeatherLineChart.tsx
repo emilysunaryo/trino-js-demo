@@ -134,7 +134,7 @@ const WeatherLineChart: React.FC<WeatherLineChartProps> = ({rawData}) => {
           <YAxis  dataKey = "total_ride_requests" tick={{ fontSize: 13 }}/>
           <Tooltip  wrapperStyle={{fontSize: 13}} content={renderTooltip}/>
       
-          <Line type="monotone" dataKey="total_ride_requests" stroke="#8884d8" strokeWidth={2}>
+          <Line type="monotone" dataKey="total_ride_requests" stroke="#d2dbfc" strokeWidth={2}>
             <LabelList
               dataKey="total_ride_requests"
               content={(props: any) => {

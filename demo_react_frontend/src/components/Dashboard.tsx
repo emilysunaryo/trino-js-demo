@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import { Grid, AppBar, Toolbar, Typography, CssBaseline, Container, SelectChangeEvent, Button, Box, CircularProgress} from '@mui/material'
-import Heatmap  from './Heatmap'
 import BubbleChart from './BubbleChart'
 import StackedBarChart from './StackedBarChart'
 import AreaChartUberLyft from './AreaChartUberLyft'
@@ -12,27 +11,23 @@ import WeatherLineChart from './WeatherLineChart';
 
 
 function Dashboard() {
+//We use useState react hooks to store the data being returned from our trino_client_server backend
     const [date, setDate] = useState<string>('All');
     const [business, setBusiness] = useState<string>('All');
     const [borough, setBorough] = useState<string>('All');;
-    const [areaChartData, setAreaChartData] = useState<[any, any, any][]>([]);
-    const [bubbleChartData, setBubbleChartData] = useState<[any, any, any][]>([]);
-    const [barChartData, setBarChartData] = useState<[any, any, any][]>([]);
-    const [cardData1, setCardData1] = useState<[any, any, any][]>([]);
-    const [cardData2, setCardData2] = useState<[any, any, any][]>([]);
+    const [areaChartData, setAreaChartData] = useState<[string, number, string][]>([]);
+    const [bubbleChartData, setBubbleChartData] = useState<[string, string, number][]>([]);
+    const [barChartData, setBarChartData] = useState<[string, string, number][]>([]);
+    const [cardData1, setCardData1] = useState<[string, number, number][]>([]);
+    const [cardData2, setCardData2] = useState<[string, number, number][]>([]);
     const [card1, setCard1] = useState<number>(0);
     const [card2, setCard2] = useState<string>('0');
     const [card3, setCard3] = useState<number>(0);
     const [card4, setCard4] = useState<string>('0');
-    const [loading, setLoading] = useState<boolean>(true);
-    const [weatherData, setWeatherData] = useState<[any, any, any, any, any, any, any][]>([]);
-    const [heatmapChartData, setHeatmapChartData] = useState<string[][]>([]);
+    const [weatherData, setWeatherData] = useState<[number, number, number, number, number, number, number][]>([]);
 
-
- //TODO: interesting to see: send a call for a data product , managing queries within galaxy!!, call reference to query within a data product
-
- //Renders once when the page mounts, calls api in node server and passes data to child graph components as props. 
- //Currently hardcoding API endpoint into URL
+ //The useEffect() react hook below will render once when the page mounts. We use axios to pass query name parameters to our backend server to grab data for specific graphs 
+ // NOTE: We are currently hardcoding our url rather than dynamically calling our API due to the static nature of our data
 
   useEffect(() => {
     const handleQueries = async () => {
@@ -45,28 +40,38 @@ function Dashboard() {
                 axios.get('http://localhost:3001/api/query?query=payAndRequestsByBorough'),
                 axios.get('http://localhost:3001/api/query?query=weatherNormalization')
             ]);
+        //We are storing our returned data into our useState variables
             setAreaChartData(driverPayResponseData.data);
             setBubbleChartData(rideRequestsByBorough.data);
             setBarChartData(rideRequestsByDistance.data);
             setCardData1(payRequestByDay.data);
             setCardData2(payRequestByBorough.data);
             setWeatherData(weatherNormalizationData.data);
-            setLoading(false);
+    
 
-            //i need to set card 1 - 4 initial values in here first on mount 
         } catch(error) {
             console.log("error fetching data:", error)
         }
-    
     };
     handleQueries();
   },[]);
 
 
-
+  //This useEffect will run when there are changes to cardData based on the user interacting with the drop down component.
   useEffect(() => {
     const handleDateChangesForCardComponent = (data: [any, any, any][]) => {
         const extractDayData = (day: string) => {
+            if (date === 'All') {
+                let avgPayAllDays = 0;
+                let avgReqAllDays = 0;
+                data.forEach((row) => {
+                    const [, avgPay, requests] = row;
+                    avgPayAllDays += avgPay;
+                    avgReqAllDays += requests;
+                })
+                setCard1(Math.round(avgPayAllDays / 7 * 100) / 100);
+                setCard2(formatNumberWithCommas(Math.round(avgReqAllDays / 7)))
+            }
             const result = data.find(([dayOfWeek]) => dayOfWeek === date);
             return result
         };
@@ -84,10 +89,21 @@ function Dashboard() {
   }, [cardData1, date])
 
 
-  
+
   useEffect(() => {
     const handleBoroughChangesForCardComponent = (data: [any, any, any][]) => {
         const extractBoroughData = (borough: string) => {
+            if (borough === 'All') {
+                let avgPayAllBoroughs = 0;
+                let avgReqAllBoroughs = 0;
+                data.forEach((row) => {
+                    const [, avgPay, requests] = row;
+                    avgPayAllBoroughs += avgPay;
+                    avgReqAllBoroughs += requests;
+                })
+                setCard3(Math.round(avgPayAllBoroughs / 7 * 100) / 100);
+                setCard4(formatNumberWithCommas(Math.round(avgReqAllBoroughs / 7)))
+            }
             const result = data.find(([b]) => b === borough);
             return result
           };
@@ -110,9 +126,6 @@ function Dashboard() {
   };
 
 
-    const handleAllInitialRender = () => {
-
-    }
 
     const handleDateChange = (event: SelectChangeEvent<string>) => {
         setDate(event.target.value);
@@ -157,6 +170,7 @@ function Dashboard() {
     ]
 
 
+ //In the code below, we are rendering the graphs and charts on our page. We are passing in correct props that are defined for each component
 return (
 <div>
 
@@ -199,41 +213,37 @@ return (
          </Box>
      </Box>
 
-
-{/* {loading ?  (
-    <CircularProgress /> 
-) : ( */}
-
 <Grid container spacing={2} sx={{ padding: 7 }}>
     <Grid item xs={12} md={3}>
         <CardComponent
-        cardTitle = "Avg Driver Pay by Day Of Week"
+        cardTitle = "Average Driver Pay/Ride by Day Of Week"
         value =  {card1}
-        description = {date}
+        description = {date === 'All' ? 'All Days of Week' : date }
+       
         />
     </Grid>
 
     <Grid item xs={12} md={3} >
         <CardComponent
-        cardTitle = "Avg Ride Requests by Day of Week"
+        cardTitle = "Average Ride Requests by Day of Week"
         value = {card2}
-        description = {date}
+        description = {date === 'All' ? 'All Days of Week' : date }
         />
     </Grid>
 
     <Grid item xs={12} md={3}>
         <CardComponent
-        cardTitle = "Avg Driver Pay by Borough"
+        cardTitle = "Average Driver Pay/Ride by Borough"
         value = {card3}
-        description = {borough}
+        description = {borough === 'All' ? 'All Boroughs' : borough }
         />
     </Grid>
 
     <Grid item xs={12} md={3} >
         <CardComponent
-        cardTitle = "Avg Ride Requests by Borough"
+        cardTitle = "Average Ride Requests by Borough"
         value = {card4}
-        description = {borough}
+        description = {borough === 'All' ? 'All Boroughs' : borough }
         />
     </Grid>
 <Grid item xs={12} md={3.5} sx={{ height: 450, marginTop: 2 }}>
@@ -256,33 +266,16 @@ return (
     
     />
 </Grid>
-<Grid item xs={12} md={6} sx={{ height: 450, marginBottom: 1}}>
+<Grid item xs={12} md={12} sx={{ height: 450, marginBottom: 1}}>
 <WeatherLineChart
     rawData = {weatherData}
 />
 
 </Grid>
-<Grid item xs={12} md={6} sx={{ height: 450, marginBottom: 1 }}>
-<AreaChartUberLyft
-    rawData = {areaChartData}
-    toggleOption={business}
-/>
 
 </Grid>
-</Grid>
-{/* )} */}
 
-<Heatmap
-       rideData = 
-       {[{ boro_name: 'Manhattan', value: 10 },
-        { boro_name: 'Brooklyn', value: 8 },
-        { boro_name: 'The Bronx', value: 6 },
-        { boro_name: 'Queens', value: 4 },
-        { boro_name: 'Staten Island', value: 2}
-        ]}
-        
-        
-        />
+
 </div>
 
     )

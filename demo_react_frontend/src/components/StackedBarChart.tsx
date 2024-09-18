@@ -4,7 +4,7 @@ import { Typography, Paper } from '@mui/material';
 
 
 interface RadarChartProps {
-  rawData: [any, any, any][];
+  rawData: [string, string, number][];
   toggleOption: string;
 
 }
@@ -62,8 +62,8 @@ const chartData = transformData(rawData);
           <YAxis tick = {{fontSize: 12}} />
           <Tooltip contentStyle = {{fontSize: 15}}/>
           <Legend wrapperStyle={{fontSize: 11}}/>
-         {(toggleOption === 'All' || toggleOption === 'Uber') && <Bar dataKey="Uber" stackId="a" fill="#ffc658" />}
-          {(toggleOption === 'All' || toggleOption === 'Lyft') && <Bar dataKey="Lyft" stackId="a" fill='#82ca9d' />}
+         {(toggleOption === 'All' || toggleOption === 'Uber') && <Bar dataKey="Uber" stackId="a" fill="#04d9ff" />}
+          {(toggleOption === 'All' || toggleOption === 'Lyft') && <Bar dataKey="Lyft" stackId="a" fill='#9b83f8' />}
         </BarChart>
       </ResponsiveContainer>
       </Paper>

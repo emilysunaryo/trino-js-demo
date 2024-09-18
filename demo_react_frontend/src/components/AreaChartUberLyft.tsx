@@ -6,7 +6,7 @@ import { Paper, Typography } from '@mui/material';
 
 
 interface AreaChartUberLyftProps {
-  rawData: [any, any, any][];
+  rawData: [string, number, string][];
   toggleOption: string;
 }
 interface TransformedDataItem {
@@ -62,8 +62,8 @@ const AreaChartUberLyft: React.FC<AreaChartUberLyftProps> = ({rawData, toggleOpt
           <XAxis dataKey="name" tick = {{fontSize: 10}}/>
           <YAxis tick = {{fontSize: 12}} domain ={domain}/>
           <Tooltip contentStyle = {{fontSize: 13}}/>
-          {(toggleOption === 'All' || toggleOption === 'Uber') && <Area type="monotone" dataKey="Uber" stackId="2" stroke="#82ca9d" fill="#82ca9d" />}
-          {(toggleOption === 'All' || toggleOption === 'Lyft') && <Area type="monotone" dataKey="Lyft" stackId="2" stroke="#8884d8" fill="#8884d8" />}
+          {(toggleOption === 'All' || toggleOption === 'Uber') && <Area type="monotone" dataKey="Uber" stackId="2" stroke="#04d9ff" fill="#04d9ff" />}
+          {(toggleOption === 'All' || toggleOption === 'Lyft') && <Area type="monotone" dataKey="Lyft" stackId="2" stroke="#9b83f8" fill="#9b83f8" />}
           <Legend wrapperStyle={{fontSize: 13}}/>
         </AreaChart>
       </ResponsiveContainer>

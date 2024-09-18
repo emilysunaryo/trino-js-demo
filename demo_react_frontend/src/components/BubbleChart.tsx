@@ -5,7 +5,7 @@ import { Paper, Typography } from '@mui/material';
 
 
 interface BubbleChartProps {
-  rawData: [any, any, any][];
+  rawData: [string, string, number][];
   toggleOption: string;
 }
 
@@ -128,7 +128,7 @@ const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
-              <Scatter data={chartData.Manhattan} fill="#ffc658" />
+              <Scatter data={chartData.Manhattan} fill="#78a5f8" />
             </ScatterChart>
           </ResponsiveContainer>
       
@@ -165,7 +165,7 @@ const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
-              <Scatter data={chartData["Staten Island"]} fill='#a4de6c' />
+              <Scatter data={chartData["Staten Island"]} fill='#8b80f7' />
             </ScatterChart>
           </ResponsiveContainer>
    
@@ -201,7 +201,7 @@ const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
-              <Scatter data={chartData.Brooklyn} fill='#82ca9d'/>
+              <Scatter data={chartData.Brooklyn} fill='#E03FD8'/>
             </ScatterChart>
           </ResponsiveContainer>
   
@@ -236,7 +236,7 @@ const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
-              <Scatter data={chartData.Queens} fill='#8dd1e1'/>
+              <Scatter data={chartData.Queens} fill='#9b83f8'/>
             </ScatterChart>
           </ResponsiveContainer>
     
@@ -271,7 +271,7 @@ const BubbleChart: React.FC<BubbleChartProps> = ({rawData, toggleOption}) => {
               />
               <ZAxis type="number" dataKey="value" domain={domain} range={range} />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} wrapperStyle={{ zIndex: 100 }} content={renderTooltip} />
-              <Scatter data={chartData.Bronx} fill="#8884d8" />
+              <Scatter data={chartData.Bronx} fill="#d2dbfc" />
             </ScatterChart>
           </ResponsiveContainer>
     
